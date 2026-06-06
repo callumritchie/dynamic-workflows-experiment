@@ -9,7 +9,7 @@ It demonstrates one thing: **a dynamic workflow earns its keep when the output o
                 ->  Canonicalize (one agent: cluster synonymous needs before counting)
                 ->  Score (code: frequency x importance x (5 - satisfaction))
                 ->  Ideate (Sonnet) + triage (separate judge)
-                ->  Build static HTML prototypes for the top 3
+                ->  Build static HTML prototypes for the top 3 (frontend-design skill)
                 ->  Loop: re-run low-confidence extractions and prototypes that don't render
 ```
 
@@ -27,9 +27,9 @@ You generate the workflow yourself: open the repo in Claude Code and paste `prom
 - `ground-truth/` — product, strategy, and the hidden answer key. Never given to the analysis.
 - `prompts/` — `generate-interview.md` (generation) and `run-discovery-workflow.md` (paste this to run the analysis).
 - `example-workflows/` — reference harnesses: `generate-interviews.js` (the generator that produced `interviews/`) and `discovery-loop.js` (the analysis shape). Not for direct invocation.
-- `outputs/` — the calibration run (`smoke-10.md`) + the generated HTML prototypes.
+- `outputs/` — where your run writes the ranked table + the HTML prototypes. Nothing here is committed.
 
 ## Status
-100 interviews generated (Haiku, ~2.2M tokens). A 10-interview smoke run recovers the planted #1 need cleanly — see `outputs/smoke-10.md`. Analysis is prompt-driven (see `CLAUDE.md`); budget the full 100 at ~2M tokens.
+100 interviews generated (Haiku, ~2.2M tokens). A 10-interview smoke run recovers the planted #1 need cleanly. Analysis is prompt-driven (see `CLAUDE.md`); budget the full 100 at ~2M tokens.
 
 MIT. A local experiment, not a product.

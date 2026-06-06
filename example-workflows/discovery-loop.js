@@ -91,7 +91,7 @@ const winners = await agent(`Triage these ideas; keep the TOP 3 by ROI and feasi
 phase('Build')
 await parallel(winners.top3.map(idea => {
   const slug = idea.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-  return () => agent(`Write a single self-contained static HTML file (inline CSS, no external deps) prototyping "${idea.name}: ${idea.desc}" for Reelay, then save it to ./outputs/${slug}.html. Confirm it has a valid <html> root; if not, fix and re-save.`,
+  return () => agent(`Use the frontend-design skill to design and build a single self-contained static HTML file (inline CSS and JS, no external deps) prototyping "${idea.name}: ${idea.desc}" for Reelay - distinctive and production-grade, not generic. Save it to ./outputs/${slug}.html. Confirm it has a valid <html> root; if not, fix and re-save.`,
     { model: 'sonnet', label: `build-${slug}` })
 }))
 

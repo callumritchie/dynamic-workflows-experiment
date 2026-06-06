@@ -23,7 +23,7 @@ Synthetic interviews are a **test harness for the orchestration pattern, not rea
 
 ## Cost note
 
-Generating the 100 interviews cost ~2.2M Haiku tokens. The analysis is a separate spend: the smoke test on 10 interviews cost ~370k tokens. Extraction scales with the interview count (~13k/interview); ideation + the 3 HTML builds are roughly fixed (~230k). So the full 100 lands around 2M. A 200k cap is far too low; set a 2-3M cap, or run a subset (e.g. the first 20) for a faster demo. See `outputs/smoke-10.md` for the calibration run.
+Generating the 100 interviews cost ~2.2M Haiku tokens. The analysis is a separate spend: the smoke test on 10 interviews cost ~370k tokens. Extraction scales with the interview count (~13k/interview); ideation + the 3 HTML builds are roughly fixed (~230k). So the full 100 lands around 2M. A 200k cap is far too low; set a 2-3M cap, or run a subset (e.g. the first 20) for a faster demo.
 
 ## Layout
 
@@ -31,6 +31,6 @@ Generating the 100 interviews cost ~2.2M Haiku tokens. The analysis is a separat
 - `ground-truth/` - product, strategy, the hidden answer key. Never given to the analysis.
 - `prompts/` - the generation prompt and the run-the-analysis prompt.
 - `example-workflows/` - reference harnesses (generator + analysis). Not for direct invocation.
-- `outputs/` - the ranked opportunities + the generated HTML prototypes.
+- `outputs/` - where your run writes the ranked table + the HTML prototypes. Nothing here is committed.
 
 MIT. A local experiment, not a product.
