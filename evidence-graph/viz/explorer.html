@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Evidence Graph · how it works</title>
+<style>
+  :root{
+    --bg:#0c0c14; --panel:#13121f; --ink:#ece9f5; --mut:#a39fbd; --line:rgba(255,255,255,.10);
+    --llm:#ff8fb1; --code:#5ee0a0; --store:#8ea2c8; --gold:#ffd166; --hit:#36d399; --shared:#5b9cff; --spend:#ff8a3d;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+    font:14px/1.5 -apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+  button{font:inherit;cursor:pointer}
+
+  /* layout */
+  #wrap{display:flex;flex-direction:column;height:100%}
+  header{display:flex;align-items:center;gap:14px;padding:10px 16px;border-bottom:1px solid var(--line);
+    background:rgba(0,0,0,.25)}
+  header h1{font-size:15px;margin:0;white-space:nowrap}
+  header h1 b{color:#bda9ff}
+  .tabs{display:flex;gap:5px;flex-wrap:wrap;flex:1;justify-content:center}
+  .tabs button{background:rgba(255,255,255,.04);border:1px solid var(--line);color:#cdc8e6;border-radius:999px;
+    padding:5px 11px;font-size:12px;transition:.15s}
+  .tabs button:hover{background:rgba(255,255,255,.09)}
+  .tabs button.on{background:linear-gradient(92deg,#5b3ec8,#8a5cff);border-color:transparent;color:#fff}
+  .toggle{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .toggle button{background:transparent;color:var(--mut);border:0;padding:5px 10px;font-size:12px}
+  .toggle button.on{background:rgba(255,255,255,.12);color:#fff}
+
+  main{flex:1;display:flex;min-height:0}
+  .side{position:relative;min-width:0}
+  #left{flex:1.15;border-right:1px solid var(--line);display:flex;flex-direction:column}
+  #right{flex:1;display:flex;flex-direction:column;background:#0a0a12}
+
+  .lhead{display:flex;align-items:center;gap:12px;padding:8px 14px;border-bottom:1px solid var(--line);font-size:12px;color:var(--mut)}
+  .lhead .legend{display:flex;gap:12px;flex-wrap:wrap}
+  .lhead .legend span{display:flex;align-items:center;gap:6px}
+  .dot{width:9px;height:9px;border-radius:50%;box-shadow:0 0 8px currentColor}
+  .tok{margin-left:auto;display:flex;gap:10px;align-items:center;white-space:nowrap}
+  .tok b{font-variant-numeric:tabular-nums}
+  .tok .ill{color:#6f6a85;font-size:11px}
+
+  #stage{flex:1;position:relative}
+  svg{width:100%;height:100%;display:block}
+
+  /* nodes */
+  .node rect{fill:#191826;stroke:rgba(255,255,255,.14);stroke-width:1.4;rx:11;transition:.35s}
+  .node .nlabel{fill:#e9e6f5;font-size:13px;font-weight:600;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+  .node .badge{font-size:9px;font-weight:700;text-anchor:middle;letter-spacing:.5px}
+  .node{opacity:1;transition:opacity .35s}
+  .node.dim{opacity:.26}
+  .node.active rect{stroke:var(--gold);stroke-width:2.4;filter:drop-shadow(0 0 9px rgba(255,209,102,.55))}
+  .node.llm rect{stroke:var(--llm);filter:drop-shadow(0 0 10px rgba(255,143,177,.5))}
+  .node.code rect{stroke:var(--code);filter:drop-shadow(0 0 10px rgba(94,224,160,.5))}
+  .node.hit rect{stroke:var(--hit);filter:drop-shadow(0 0 11px rgba(54,211,153,.6))}
+  .node.shared rect{stroke:var(--shared);filter:drop-shadow(0 0 11px rgba(91,156,255,.6))}
+  .badge.kllm{fill:var(--llm)} .badge.kcode{fill:var(--code)} .badge.kstore{fill:var(--store)}
+  .edge{fill:none;stroke:#3b3858;stroke-width:2;opacity:.5;transition:.35s}
+  .edge.on{stroke:var(--gold);opacity:.95}
+  .edge.dim{opacity:.12}
+  .flux{fill:var(--gold)}
+  .ping{fill:none;stroke:var(--gold);stroke-width:2.5;opacity:0}
+
+  /* harness recipe card overlay */
+  #card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:330px;
+    background:rgba(18,16,30,.96);border:1px solid rgba(138,92,255,.5);border-radius:14px;padding:16px 18px;
+    box-shadow:0 16px 50px rgba(0,0,0,.55);display:none}
+  #card h4{margin:0 0 4px;font-size:13px;color:#c9b8ff;letter-spacing:.04em;text-transform:uppercase}
+  #card .cap{color:var(--mut);font-size:12px;margin-bottom:10px}
+  #card ol{margin:0;padding-left:18px}
+  #card li{margin:5px 0;font-size:13px}
+  #card .tag{font-size:9px;font-weight:700;padding:1px 6px;border-radius:6px;margin-left:6px;vertical-align:middle}
+  #card .tag.llm{background:rgba(255,143,177,.18);color:var(--llm)}
+  #card .tag.code{background:rgba(94,224,160,.18);color:var(--code)}
+
+  /* right product UI */
+  .rtop{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line)}
+  .rtop .proj{font-weight:600}
+  .rtop .proj small{display:block;color:var(--mut);font-weight:400;font-size:11px}
+  .team{margin-left:auto;display:flex;gap:-6px}
+  .av{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;
+    margin-left:-6px;border:2px solid #0a0a12;color:#0a0a12}
+  .av.on{outline:2px solid #8a5cff;outline-offset:1px}
+  .srcbar{display:flex;gap:8px;padding:8px 14px;border-bottom:1px solid var(--line);font-size:12px;color:var(--mut);flex-wrap:wrap}
+  .srcbar .s{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.04);border:1px solid var(--line);
+    border-radius:8px;padding:3px 9px}
+  .srcbar .s.new{border-color:var(--hit);color:var(--hit)}
+  .thread{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+  .bub{max-width:90%;padding:10px 13px;border-radius:14px;font-size:13.5px;white-space:pre-wrap}
+  .bub.you{align-self:flex-end;background:linear-gradient(92deg,#3b2f73,#5b46b0);border-bottom-right-radius:4px}
+  .bub.asst{align-self:flex-start;background:#16151f;border:1px solid var(--line);border-bottom-left-radius:4px}
+  .bub .who{font-size:11px;color:var(--mut);margin-bottom:3px}
+  .rk{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px dashed rgba(255,255,255,.08);font-size:12.5px}
+  .rk:last-child{border:0}
+  .rk b{color:#ffd9a8;font-variant-numeric:tabular-nums}
+  .rk.lead b{color:var(--hit)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .chip{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:#cfcbe6;background:rgba(255,255,255,.03)}
+  .chip.cite{cursor:pointer;border-color:#5b9cff55;color:#bcd3ff}
+  .chip.cite:hover{background:rgba(91,156,255,.16)}
+  .chip.q{border-color:#ff8fb155;color:#ffc4d6}
+  .chip.n{border-color:#5ee0a055;color:#bdf3d6}
+  .chip.d{border-color:#ffd16655;color:#ffe6a8}
+  .thumb{margin-top:8px;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;
+    padding:8px 10px;background:rgba(255,255,255,.03);font-size:12px}
+  .thumb .ic{width:34px;height:24px;border-radius:5px;background:linear-gradient(120deg,#7b5cff,#3aa0ff)}
+  .status{font-size:11.5px;color:var(--mut);align-self:flex-start;display:flex;align-items:center;gap:7px}
+  .status .sp{width:9px;height:9px;border-radius:50%;border:2px solid #6a5cff;border-top-color:transparent;animation:spin .8s linear infinite}
+  .status.free{color:var(--hit)} .status.free .sp{display:none}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .composer{border-top:1px solid var(--line);padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+  .composer .scope{font-size:11px;color:#bcd3ff;background:rgba(91,156,255,.12);border:1px solid #5b9cff44;border-radius:7px;
+    padding:2px 8px;align-self:flex-start}
+  .ibox{display:flex;gap:8px;align-items:center;background:#100f1a;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+  .ibox input{flex:1;background:transparent;border:0;color:var(--ink);outline:none;font:inherit}
+  .ibox input::placeholder{color:#5f5b78}
+  .btns{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:rgba(255,255,255,.05);color:#e9e6f5;border-radius:9px;padding:7px 12px;font-size:12.5px}
+  .btn:hover{background:rgba(255,255,255,.11)}
+  .btn.primary{background:linear-gradient(92deg,#3aa0ff,#6ad0ff);border:0;color:#04131e;font-weight:600}
+  .btn.try{animation:nudge 1.6s ease-in-out infinite}
+  @keyframes nudge{0%,100%{box-shadow:0 0 0 0 rgba(106,208,255,.0)}50%{box-shadow:0 0 0 4px rgba(106,208,255,.25)}}
+
+  /* bottom narration */
+  footer{border-top:1px solid var(--line);background:rgba(0,0,0,.3);padding:12px 16px;display:flex;align-items:center;gap:16px}
+  footer .narr{flex:1;min-width:0}
+  footer .step{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#b9a7ff}
+  footer h2{margin:2px 0 4px;font-size:16px}
+  footer .concept{font-size:12.5px;color:#d7d2ea}
+  footer .concept b{color:#bda9ff}
+  .ctrls{display:flex;align-items:center;gap:8px}
+  .ctrls button{border:1px solid var(--line);background:rgba(255,255,255,.05);color:#e9e6f5;border-radius:8px;padding:8px 12px}
+  .ctrls .play{background:linear-gradient(92deg,#3aa0ff,#6ad0ff);border:0;color:#04131e;font-weight:600}
+  .ctrls .count{color:var(--mut);font-variant-numeric:tabular-nums;width:42px;text-align:center}
+
+  #travel{position:fixed;width:12px;height:12px;border-radius:50%;background:#6ad0ff;box-shadow:0 0 14px #6ad0ff;
+    pointer-events:none;opacity:0;z-index:50}
+  @media (max-width:900px){ main{flex-direction:column} #left{border-right:0;border-bottom:1px solid var(--line)} }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <header>
+    <h1>Evidence&nbsp;Graph · <b>how it works</b></h1>
+    <div class="tabs" id="tabs"></div>
+    <div class="toggle" id="modeToggle">
+      <button data-m="plain" class="on">Plain</button>
+      <button data-m="tech">Technical</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="side" id="left">
+      <div class="lhead">
+        <div class="legend">
+          <span><i class="dot" style="color:#ff8fb1"></i>LLM (spends tokens)</span>
+          <span><i class="dot" style="color:#5ee0a0"></i>code (no model)</span>
+          <span><i class="dot" style="color:#36d399"></i>cache hit</span>
+          <span><i class="dot" style="color:#5b9cff"></i>shared</span>
+        </div>
+        <div class="tok">
+          <span style="color:#ff8a3d">spent <b id="tSpent">0</b></span>
+          <span style="color:#36d399">saved <b id="tSaved">0</b></span>
+          <span class="ill" id="tIll"></span>
+        </div>
+      </div>
+      <div id="stage">
+        <svg id="svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet"></svg>
+        <div id="card">
+          <h4>Claude writes the workflow</h4>
+          <div class="cap">A dynamic workflow is the multi-stage recipe for this task — authored once, then run.</div>
+          <ol>
+            <li>Extract <span class="tag llm">LLM</span></li>
+            <li>Canonicalize <span class="tag llm">LLM</span></li>
+            <li>Score <span class="tag code">code</span></li>
+            <li>Ideate <span class="tag llm">LLM</span></li>
+            <li>Build <span class="tag code">code</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="side" id="right">
+      <div class="rtop">
+        <div class="proj">Reelay · discovery<small id="rUser">workspace</small></div>
+        <div class="team" id="team"></div>
+      </div>
+      <div class="srcbar" id="srcbar"></div>
+      <div class="thread" id="thread"></div>
+      <div class="composer" id="composer"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="narr">
+      <div class="step" id="step">—</div>
+      <h2 id="title">Evidence Graph explorer</h2>
+      <div class="concept"><b>Concept&nbsp;›</b> <span id="concept">Pick a scenario, then press Play or Next. The product is on the right; the machinery it triggers is on the left.</span></div>
+    </div>
+    <div class="ctrls">
+      <button id="prev">‹ Prev</button>
+      <button class="play" id="play">▶ Play</button>
+      <button id="next">Next ›</button>
+      <span class="count" id="count"></span>
+    </div>
+  </footer>
+</div>
+<div id="travel"></div>
+
+<script>
+/* ---------------- backend node / edge model (2D) ---------------- */
+const NS='http://www.w3.org/2000/svg';
+const NODES = {
+  src:   {x:60, y:300, plain:'Raw notes',    tech:'Sources · L0',          kind:'store'},
+  units: {x:210,y:300, plain:'Tagged quotes',tech:'Evidence units · L1',   kind:'store'},
+  extract:{x:360,y:300,plain:'Read & tag',   tech:'Extract · L2',          kind:'llm'},
+  canon: {x:510,y:300, plain:'Group needs',  tech:'Canonicalize · L3a',    kind:'llm'},
+  score: {x:660,y:300, plain:'Scorecard',    tech:'Score · L3b',           kind:'code'},
+  rank:  {x:820,y:300, plain:'Ranking',      tech:'Ranking',               kind:'store'},
+  embed: {x:360,y:470, plain:'Search index', tech:'Embedding index · L4',  kind:'store'},
+  quant: {x:60, y:455, plain:'Survey data',  tech:'Quant · CSV',           kind:'store'},
+  doc:   {x:60, y:560, plain:'Report / PDF', tech:'Doc source',            kind:'store'},
+  tri:   {x:540,y:585, plain:'Cross-source', tech:'Triangulate',           kind:'code'},
+  router:{x:660,y:130, plain:'Router',       tech:'Question router',       kind:'code'},
+  answer:{x:850,y:130, plain:'Answer',       tech:'Answer + citations',    kind:'store'},
+  out_a: {x:820,y:430, plain:'Analysis',     tech:'Tier 1 · Analysis',     kind:'store'},
+  out_n: {x:820,y:520, plain:'Deck',         tech:'Tier 2 · Narrative',    kind:'store'},
+  out_p: {x:820,y:610, plain:'Prototype',    tech:'Tier 3 · Prototype',    kind:'store'},
+};
+const EDGES = [
+  ['src','units'],['units','extract'],['extract','canon'],['canon','score'],['score','rank'],
+  ['units','embed'],['extract','embed'],['quant','embed'],['doc','embed'],
+  ['rank','router'],['embed','router'],['router','answer'],
+  ['rank','tri'],['embed','tri'],
+  ['rank','out_a'],['out_a','out_n'],['out_a','out_p'],
+];
+const W=128,H=52;
+const svg=document.getElementById('svg');
+function el(tag,attrs){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e;}
+function center(id){const n=NODES[id];return {x:n.x+W/2,y:n.y+H/2};}
+
+// edges first (under nodes)
+const edgeEls={};
+for(const [a,b] of EDGES){
+  const A=center(a),B=center(b);
+  const dx=Math.abs(B.x-A.x);
+  const c=Math.max(40,dx*0.5);
+  const d=`M ${A.x} ${A.y} C ${A.x+c} ${A.y}, ${B.x-c} ${B.y}, ${B.x} ${B.y}`;
+  const p=el('path',{d,class:'edge',id:`e-${a}-${b}`});
+  svg.appendChild(p); edgeEls[`${a}|${b}`]=p;
+}
+// nodes
+const nodeEls={};
+for(const id in NODES){
+  const n=NODES[id];
+  const g=el('g',{class:'node',id:`n-${id}`,transform:`translate(${n.x},${n.y})`});
+  g.appendChild(el('rect',{width:W,height:H,rx:11}));
+  const lab=el('text',{class:'nlabel',x:W/2,y:H/2+1}); lab.textContent=n.plain; lab.dataset.plain=n.plain; lab.dataset.tech=n.tech;
+  g.appendChild(lab);
+  const bd=el('text',{class:`badge k${n.kind}`,x:W/2,y:H-7});
+  bd.textContent=n.kind==='llm'?'LLM':n.kind==='code'?'CODE':'STORE';
+  g.appendChild(bd);
+  svg.appendChild(g); nodeEls[id]=g;
+}
+// "start here" marker
+const sh=el('g',{id:'starthere'});
+sh.appendChild(el('text',{x:NODES.src.x+W/2,y:NODES.src.y-16,fill:'#8a86a8','font-size':11,'text-anchor':'middle'}));
+sh.lastChild.textContent='▶ start here';
+svg.appendChild(sh);
+
+// particle layer
+const fluxLayer=el('g',{id:'flux'}); svg.appendChild(fluxLayer);
+const POOL=90, PER=6; const flux=[];
+for(let i=0;i<POOL;i++){const c=el('circle',{r:3.2,class:'flux'}); c.style.opacity=0; fluxLayer.appendChild(c); flux.push(c);}
+const pingEl=el('circle',{r:10,class:'ping'}); svg.appendChild(pingEl);
+let activeFlows=[]; // [{path, len}]
+
+/* ---------------- right-panel renderer ---------------- */
+const TEAM={you:{n:'You',c:'#ffd166'},alice:{n:'A',c:'#7be0c0'},bob:{n:'B',c:'#9cc0ff'},carol:{n:'C',c:'#ffb3c7'}};
+function renderTeam(active){
+  const t=document.getElementById('team'); t.innerHTML='';
+  ['alice','bob','carol'].forEach(u=>{const d=document.createElement('div');
+    d.className='av'+(active===u?' on':''); d.style.background=TEAM[u].c; d.textContent=TEAM[u].n; t.appendChild(d);});
+}
+function renderRight(r){
+  document.getElementById('rUser').textContent = r.user&&r.user!=='you' ? `${cap(r.user)}’s view` : 'workspace';
+  renderTeam(r.user);
+  // sources
+  const sb=document.getElementById('srcbar'); sb.innerHTML='';
+  const s=r.sources||{transcripts:20};
+  const addS=(label,isNew)=>{const d=document.createElement('div');d.className='s'+(isNew?' new':'');d.textContent=label;sb.appendChild(d);};
+  addS(`📄 ${s.transcripts} interviews`, s.added==='transcripts');
+  if(s.quant) addS(`📊 ${s.quant} survey`, s.added==='quant');
+  if(s.doc) addS(`📑 ${s.doc} report`, s.added==='doc');
+  // thread
+  const th=document.getElementById('thread'); th.innerHTML='';
+  (r.thread||[]).forEach(m=>{
+    if(m.status){const d=document.createElement('div');d.className='status'+(m.free?' free':'');
+      d.innerHTML=(m.free?'✓ ':'<span class="sp"></span>')+m.status; th.appendChild(d); return;}
+    const b=document.createElement('div'); b.className='bub '+(m.who==='you'?'you':'asst');
+    if(m.who&&m.who!=='you') b.innerHTML=`<div class="who">${m.whoName||'Assistant'}</div>`;
+    b.insertAdjacentText('beforeend', m.text||'');
+    if(m.rank){const w=document.createElement('div');m.rank.forEach((row,i)=>{const rk=document.createElement('div');
+      rk.className='rk'+(i===0?' lead':'');rk.innerHTML=`<span>${i+1}. ${row[0]}</span><b>${row[1]}</b>`;w.appendChild(rk);});b.appendChild(w);}
+    if(m.cites){const w=document.createElement('div');w.className='chips';m.cites.forEach(c=>{const x=document.createElement('span');
+      x.className='chip cite';x.textContent='“'+c+'”';x.title='open source passage';w.appendChild(x);});b.appendChild(w);}
+    if(m.chips){const w=document.createElement('div');w.className='chips';m.chips.forEach(c=>{const x=document.createElement('span');
+      x.className='chip '+(c.k||'');x.textContent=c.t;w.appendChild(x);});b.appendChild(w);}
+    if(m.thumb){const w=document.createElement('div');w.className='thumb';w.innerHTML=`<span class="ic"></span>${m.thumb}`;b.appendChild(w);}
+    th.appendChild(b);
+  });
+  th.scrollTop=th.scrollHeight;
+  // composer
+  const c=document.getElementById('composer'); c.innerHTML='';
+  const comp=r.composer||{};
+  if(comp.scope){const sc=document.createElement('div');sc.className='scope';sc.textContent='scope: '+comp.scope;c.appendChild(sc);}
+  if(comp.text!==undefined||comp.placeholder){const box=document.createElement('div');box.className='ibox';
+    box.innerHTML=`<input ${comp.text!==undefined?`value="${esc(comp.text)}"`:''} placeholder="${esc(comp.placeholder||'Ask anything about your research…')}" readonly>`;c.appendChild(box);}
+  if(comp.buttons){const w=document.createElement('div');w.className='btns';comp.buttons.forEach(bt=>{const x=document.createElement('button');
+    x.className='btn'+(bt.primary?' primary':'')+(bt.id===window.__try?' try':'');x.textContent=bt.label;x.id='b-'+bt.id;
+    x.onclick=()=>{ if(bt.id===window.__try){stopPlay(); next();} };c.appendChild(x);w.appendChild(x);});c.appendChild(w);}
+}
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------------- scenarios (declarative) ---------------- */
+const RANK=[['decide-what-to-watch',292],['unified-content-discovery',249],['know-show-locations',167],['subscription-overload',166],['cross-device-resume',160]];
+const S = {
+ prologue:{name:'① Claude writes the workflow', steps:[
+  { step:'Prologue · the dynamic workflow', title:'You ask; Claude writes the workflow', try:'send',
+    concept:'A <b>dynamic workflow</b> is the multi-stage recipe Claude writes for the task — <b>not</b> a single fan-out. The orchestration is authored code; the model only does bounded work inside each stage.',
+    left:{card:true, dim:'all'}, handoff:'src',
+    right:{user:'you', thread:[{who:'you',text:'Run a discovery analysis on these 20 interviews.'}],
+      composer:{text:'Run a discovery analysis on these 20 interviews.',buttons:[{id:'send',label:'Send ▶',primary:true}]}} },
+  { step:'Prologue · origin vs product', title:'…then it runs as a fixed, cached pipeline',
+    concept:'In the product this recipe isn’t re-written each time — it runs as a <b>fixed, durable pipeline</b>. The model tags; code orchestrates and scores. (Later, the <b>router</b> is where work is still chosen per question.)',
+    left:{card:true, on:['src','units','extract','canon','score','rank'], flow:[['src','units'],['units','extract'],['extract','canon'],['canon','score'],['score','rank']]},
+    right:{user:'you', thread:[{who:'you',text:'Run a discovery analysis on these 20 interviews.'},
+      {who:'asst',text:'Here’s the workflow I’ll run:\nExtract → Canonicalize → Score → Ideate → Build.\nIt’s saved and reused, so re-runs are cheap.'}],
+      composer:{placeholder:'Workflow ready — press Next to watch it run'}} },
+ ]},
+ build:{name:'② First analysis', steps:[
+  { step:'Run · 1 of 4', title:'Read & tag every interview', tok:{s:0,v:0},
+    concept:'Each interview is <b>fingerprinted</b> so an identical file is never processed twice. It’s split into short, quotable units.',
+    left:{on:['src','units'], flow:[['src','units']]},
+    right:{thread:[{status:'Reading & tagging 20 interviews…'}], composer:{placeholder:'analysis running…'}} },
+  { step:'Run · 2 of 4', title:'Extract opportunities — fanned out to a cheap model', tok:{s:30805,v:0},
+    concept:'<b>This is one stage of the workflow:</b> bounded, repetitive reading is fanned out to a cheap model — 20 agents at once. Cheap model, big parallelism.',
+    left:{on:['units','extract'], llm:['extract'], flow:[['units','extract']], badge:{extract:'×20 agents'}},
+    right:{thread:[{status:'Extracting opportunities · 20 agents in parallel…'}], composer:{placeholder:'analysis running…'}} },
+  { step:'Run · 3 of 4', title:'Group the differently-worded needs', tok:{s:30805,v:0},
+    concept:'123 differently-worded needs become <b>9</b> — grouped <i>before</i> counting, so the same need doesn’t fragment across a dozen labels.',
+    left:{on:['extract','canon'], llm:['canon'], flow:[['extract','canon']]},
+    right:{thread:[{status:'Grouping 123 raw needs → 9 canonical…'}], composer:{placeholder:'analysis running…'}} },
+  { step:'Run · 4 of 4', title:'Score it — in plain code', tok:{s:30805,v:0},
+    concept:'Scoring is <b>plain code, no model</b>. This is the heart of it: <b>the orchestrator moved off the model</b> — the model tags, code decides the ranking.',
+    left:{on:['canon','score','rank'], code:['score'], flow:[['canon','score'],['score','rank']]},
+    right:{thread:[{who:'asst',text:'Ranked opportunities (blind):',rank:RANK}], composer:{placeholder:'ask a question, or add more data'}} },
+ ]},
+ incremental:{name:'③ Add more data', steps:[
+  { step:'Incremental · 1 of 3', title:'Five more interviews arrive', try:'addfiles', tok:{s:0,v:0},
+    concept:'Research arrives in waves. Adding data shouldn’t mean re-paying for everything you already analysed.',
+    left:{on:['src'], dim:'most'}, handoff:'src',
+    right:{sources:{transcripts:25,added:'transcripts'}, thread:[{who:'you',text:'Uploaded 5 more interviews from wave 2.'}],
+      composer:{buttons:[{id:'addfiles',label:'＋ Add files & re-analyse',primary:true}]}} },
+  { step:'Incremental · 2 of 3', title:'15 reused, only 5 are new', tok:{s:10684,v:30805},
+    concept:'The 15 already-seen files are <b>cache hits — free</b>. Only the 5 new ones are sent to the model. Cost scales with the <b>change</b>, not the corpus.',
+    left:{on:['units','extract'], hit:['units'], llm:['extract'], flow:[['units','extract']], badge:{extract:'×5 new'}},
+    right:{sources:{transcripts:25}, thread:[{status:'15 cached · 5 new — extracting 5…'}], composer:{placeholder:'updating…'}} },
+  { step:'Incremental · 3 of 3', title:'Slot in, re-score for free', tok:{s:10684,v:30805},
+    concept:'New needs slot into the existing 9 (no re-clustering), then re-scoring is <b>code — free</b>. The ranking updates without re-paying.',
+    left:{on:['canon','score','rank'], llm:['canon'], code:['score'], flow:[['canon','score'],['score','rank']]},
+    right:{sources:{transcripts:25}, thread:[{who:'asst',text:'Updated ranking (25 interviews):',rank:RANK}], composer:{placeholder:'ask a question'}} },
+ ]},
+ aggregate:{name:'④ Ask · instant', steps:[
+  { step:'Ask · 1 of 2', title:'“What’s the top opportunity?”', try:'send', tok:{s:0,v:0},
+    concept:'The <b>router is the orchestrator, moved off the model</b>: code decides <i>how</i> to answer. Here the answer already exists.',
+    left:{on:['router'], code:['router'], dim:'most'}, handoff:'router',
+    right:{thread:[{who:'you',text:'What’s the top opportunity?'}],
+      composer:{text:'What’s the top opportunity?',buttons:[{id:'send',label:'Send ▶',primary:true}]}} },
+  { step:'Ask · 2 of 2', title:'Read straight from the scorecard', tok:{s:0,v:0},
+    concept:'It reads the <b>cached scorecard</b> — no model call, no searching. ~0 tokens, instant.',
+    left:{on:['rank','router','answer'], hit:['rank'], code:['router'], flow:[['rank','router'],['router','answer']]},
+    right:{thread:[{who:'you',text:'What’s the top opportunity?'},
+      {who:'asst',text:'Top opportunity:',rank:RANK},{status:'answered from cache · ~0 tokens',free:true}],
+      composer:{placeholder:'ask anything'}} },
+ ]},
+ retrieval:{name:'⑤ Ask · scoped + cited', steps:[
+  { step:'Scoped · 1 of 3', title:'A specific question, on a few interviews', try:'send', tok:{s:0,v:0},
+    concept:'<b>Scope is a real filter</b> — limit to certain interviews, segments or sources. The answer only uses what’s in scope.',
+    left:{on:['router'], code:['router'], dim:'most'}, handoff:'router',
+    right:{thread:[{who:'you',text:'What did people say about subscription cost?'}],
+      composer:{scope:'4 interviews',text:'What did people say about subscription cost?',buttons:[{id:'send',label:'Send ▶',primary:true}]}} },
+  { step:'Scoped · 2 of 3', title:'Search the actual passages', tok:{s:17,v:0},
+    concept:'It searches the <b>real quotes</b> in those interviews — not a summary. The summary is only an index <i>into</i> the evidence.',
+    left:{on:['embed','router'], code:['router'], flow:[['embed','router']]},
+    right:{thread:[{status:'searching in-scope passages…'}], composer:{scope:'4 interviews',placeholder:'searching…'}} },
+  { step:'Scoped · 3 of 3', title:'Answer with quotes you can open', tok:{s:17,v:0},
+    concept:'Every answer <b>cites real passages</b> (click a quote to open it). Trust comes from the evidence, not the prose.',
+    left:{on:['embed','router','answer'], flow:[['router','answer']]},
+    right:{thread:[{who:'you',text:'What did people say about subscription cost?'},
+      {who:'asst',text:'Cost shows up as juggling and guilt over unused services:',
+       cites:['…needed to add another subscription, so I didn’t watch it. (019)','…I check the credit card bill every month — six services. (014)','…works affordably when you want multiple services. (015)']}],
+      composer:{scope:'4 interviews',placeholder:'ask a follow-up'}} },
+  { step:'Honesty beat', title:'When there’s nothing, it says so', tok:{s:0,v:0},
+    concept:'Ask something the selected sources don’t cover and it returns <b>“no evidence in the selected sources”</b> — it never invents an answer.',
+    left:{on:['embed','router'], code:['router'], flow:[['embed','router']]},
+    right:{thread:[{who:'you',text:'Did anyone mention enterprise SSO pricing?'},
+      {who:'asst',text:'No evidence in the selected sources (4 interviews) matches that question.'}],
+      composer:{scope:'4 interviews',placeholder:'try a broader scope'}} },
+ ]},
+ collab:{name:'⑥ Team & sharing', steps:[
+  { step:'Team · 1 of 4', title:'Alice asks — privately', tok:{s:17,v:0},
+    concept:'Each person’s questions are <b>private by default</b>. Alice’s answer is computed and saved to her workspace.',
+    left:{on:['router','answer'], code:['router'], flow:[['router','answer']]},
+    right:{user:'alice', thread:[{who:'alice',whoName:'Alice',text:'What did people say about subscription cost?'},
+      {who:'asst',text:'Cost = juggling + guilt over unused services. (3 quotes)'},{status:'computed · private to Alice',free:true}],
+      composer:{placeholder:'Alice’s workspace'}} },
+  { step:'Team · 2 of 4', title:'Bob asks the same — it recomputes', tok:{s:34,v:0},
+    concept:'Bob <b>can’t see</b> Alice’s private answer, so it’s redone for him. Privacy first — even at the cost of a repeat.',
+    left:{on:['router','answer'], code:['router'], flow:[['router','answer']]},
+    right:{user:'bob', thread:[{who:'bob',whoName:'Bob',text:'What did people say about subscription cost?'},
+      {status:'recomputing · Bob can’t see Alice’s private answer…'}], composer:{placeholder:'Bob’s workspace'}} },
+  { step:'Team · 3 of 4', title:'Alice promotes the finding', try:'promote', tok:{s:34,v:0},
+    concept:'One click <b>shares</b> a finding with the whole project — the low-friction way to stop everyone working in silos.',
+    left:{on:['answer'], shared:['answer']}, handoff:'answer',
+    right:{user:'alice', thread:[{who:'alice',whoName:'Alice',text:'Cost = juggling + guilt over unused services. (3 quotes)'},
+      {status:'promote this to the project?'}],
+      composer:{buttons:[{id:'promote',label:'★ Promote to project',primary:true}]}} },
+  { step:'Team · 4 of 4', title:'Carol gets it instantly', tok:{s:34,v:17},
+    concept:'Now <b>anyone</b> asking gets the shared answer instantly — promotion turns one person’s work into the team’s cache hit.',
+    left:{on:['router','answer'], shared:['answer'], hit:['answer'], flow:[['router','answer']]},
+    right:{user:'carol', thread:[{who:'carol',whoName:'Carol',text:'What did people say about subscription cost?'},
+      {who:'asst',text:'Cost = juggling + guilt over unused services. (3 quotes)'},{status:'shared answer · 0 tokens',free:true}],
+      composer:{placeholder:'Carol’s workspace'}} },
+ ]},
+ multi:{name:'⑦ Many sources', steps:[
+  { step:'Fusion · 1 of 4', title:'Add a survey and a market report', try:'addfiles', tok:{s:0,v:0},
+    concept:'Interviews aren’t the only evidence. Drop in <b>quant</b> (a survey) and a <b>document</b> (a market report).',
+    left:{on:['quant','doc'], dim:'most'}, handoff:'embed',
+    right:{sources:{transcripts:25,quant:1,doc:1,added:'quant'}, thread:[{who:'you',text:'Added a survey (CSV) and a market report (PDF).'}],
+      composer:{buttons:[{id:'addfiles',label:'＋ Add survey + report',primary:true}]}} },
+  { step:'Fusion · 2 of 4', title:'Start from the interviews’ #1 finding', tok:{s:0,v:0},
+    concept:'Take the top qualitative finding — <b>decide-what-to-watch</b> (came up in 19 of 20).',
+    left:{on:['rank','tri'], flow:[['rank','tri']]},
+    right:{sources:{transcripts:25,quant:1,doc:1}, thread:[{who:'you',text:'How strong is “decide-what-to-watch”, really?'},
+      {who:'asst',text:'Qual: ranked #1 — raised in 19 of 20 interviews.'}], composer:{placeholder:'triangulating…'}} },
+  { step:'Fusion · 3 of 4', title:'Corroborate with the survey', tok:{s:0,v:0},
+    concept:'The survey backs it up — and survey rows are searchable evidence too, not a separate silo.',
+    left:{on:['quant','embed','tri'], flow:[['quant','embed'],['embed','tri']]},
+    right:{sources:{transcripts:25,quant:1,doc:1}, thread:[{who:'asst',text:'Quant agrees:',chips:[{t:'survey · 18 min spent deciding',k:'n'},{t:'47% give up & default',k:'n'}]}],
+      composer:{placeholder:'triangulating…'}} },
+  { step:'Fusion · 4 of 4', title:'One conclusion, three sources', tok:{s:0,v:0},
+    concept:'Interviews + survey + market report all point the same way. <b>Triangulated</b>, with citations across every source type.',
+    left:{on:['doc','embed','tri'], shared:['tri'], flow:[['doc','embed'],['embed','tri']]},
+    right:{sources:{transcripts:25,quant:1,doc:1}, thread:[{who:'asst',text:'Corroborated across all three:',
+      chips:[{t:'interviews · #1 (19/20)',k:'q'},{t:'survey · 18 min',k:'n'},{t:'report · “Decision fatigue dominates”',k:'d'}]}],
+      composer:{placeholder:'ask a follow-up'}} },
+ ]},
+ output:{name:'⑧ Outputs', steps:[
+  { step:'Output · 1 of 3', title:'Turn the analysis into a deck', try:'deck', tok:{s:0,v:0},
+    concept:'You choose <b>how far to take it</b>. A deck is built from the analysis you already have.',
+    left:{on:['rank','out_a','out_n'], hit:['out_a'], flow:[['rank','out_a'],['out_a','out_n']]}, handoff:'out_a',
+    right:{thread:[{who:'you',text:'Make a board-ready deck of the findings.'},{who:'asst',text:'Discovery readout',thumb:'narrative.md · cited deck'}],
+      composer:{buttons:[{id:'deck',label:'▦ Generate deck',primary:true},{id:'proto',label:'◇ Prototype'}]}} },
+  { step:'Output · 2 of 3', title:'…or a clickable prototype', try:'proto', tok:{s:0,v:0},
+    concept:'A prototype is built from the <b>same cached analysis</b> — the analysis is not re-run to go further.',
+    left:{on:['out_a','out_p'], hit:['out_a'], flow:[['out_a','out_p']]}, handoff:'out_a',
+    right:{thread:[{who:'you',text:'Now a prototype for the #1 opportunity.'},{who:'asst',text:'decide-what-to-watch',thumb:'reelay-roulette.html · concept'}],
+      composer:{buttons:[{id:'proto',label:'◇ Build prototype',primary:true}]}} },
+  { step:'Output · 3 of 3', title:'Ask again — it’s all cached', tok:{s:0,v:1},
+    concept:'Re-request anything and every tier is a <b>cache hit</b>. Going further never re-does the analysis.',
+    left:{on:['out_a','out_n','out_p'], hit:['out_a','out_n','out_p']},
+    right:{thread:[{who:'you',text:'Regenerate the deck.'},{status:'all tiers cached · 0 recompute',free:true}],
+      composer:{placeholder:'done'}} },
+ ]},
+};
+const ORDER=['prologue','build','incremental','aggregate','retrieval','collab','multi','output'];
+const MAXTOK=31000;
+
+/* ---------------- engine ---------------- */
+let curKey='prologue', curStep=0, playing=false, playT=0, mode='plain';
+
+const tabs=document.getElementById('tabs');
+ORDER.forEach(k=>{const b=document.createElement('button');b.textContent=S[k].name;b.dataset.k=k;
+  b.onclick=()=>select(k);tabs.appendChild(b);});
+
+function select(k){curKey=k;curStep=0;[...tabs.children].forEach(b=>b.classList.toggle('on',b.dataset.k===k));setStep(0);}
+function clearStates(){
+  for(const id in nodeEls){nodeEls[id].classList.remove('dim','active','llm','code','hit','shared');
+    const bd=nodeEls[id].querySelector('.badge');bd.textContent=NODES[id].kind==='llm'?'LLM':NODES[id].kind==='code'?'CODE':'STORE';}
+  for(const key in edgeEls){edgeEls[key].classList.remove('on','dim');}
+}
+function applyLabels(){for(const id in nodeEls){const l=nodeEls[id].querySelector('.nlabel');l.textContent=l.dataset[mode];}}
+
+function setStep(i){
+  const steps=S[curKey].steps; curStep=(i+steps.length)%steps.length; const st=steps[curStep];
+  const L=st.left||{}, R=st.right||{};
+  clearStates();
+  // dimming
+  const onSet=new Set([].concat(L.on||[],L.llm||[],L.code||[],L.hit||[],L.shared||[]));
+  if(L.dim==='all'){ for(const id in nodeEls) nodeEls[id].classList.add('dim'); for(const k in edgeEls) edgeEls[k].classList.add('dim'); }
+  else if(L.dim==='most'||onSet.size){ for(const id in nodeEls) if(!onSet.has(id)) nodeEls[id].classList.add('dim');
+    for(const k in edgeEls){ const [a,b]=k.split('|'); if(!(onSet.has(a)&&onSet.has(b))) edgeEls[k].classList.add('dim'); } }
+  // states
+  (L.on||[]).forEach(id=>nodeEls[id]?.classList.add('active'));
+  (L.llm||[]).forEach(id=>nodeEls[id]?.classList.add('llm'));
+  (L.code||[]).forEach(id=>nodeEls[id]?.classList.add('code'));
+  (L.hit||[]).forEach(id=>nodeEls[id]?.classList.add('hit'));
+  (L.shared||[]).forEach(id=>nodeEls[id]?.classList.add('shared'));
+  if(L.badge) for(const id in L.badge){ const bd=nodeEls[id]?.querySelector('.badge'); if(bd) bd.textContent=L.badge[id]; }
+  // flows
+  activeFlows=[];
+  (L.flow||[]).forEach(([a,b])=>{const p=edgeEls[`${a}|${b}`]; if(p){p.classList.add('on');p.classList.remove('dim');
+    activeFlows.push({path:p,len:p.getTotalLength()});}});
+  document.getElementById('card').style.display = L.card?'block':'none';
+  document.getElementById('starthere').style.display = (curKey==='build'||curKey==='prologue')?'block':'none';
+  // right panel
+  window.__try = st.try || null;
+  renderRight(R);
+  // narration
+  document.getElementById('step').textContent=st.step;
+  document.getElementById('title').textContent=st.title;
+  document.getElementById('concept').innerHTML=st.concept;
+  document.getElementById('count').textContent=`${curStep+1}/${steps.length}`;
+  // tokens
+  const s=st.tok?.s||0, v=st.tok?.v||0;
+  document.getElementById('tSpent').textContent=s.toLocaleString();
+  document.getElementById('tSaved').textContent=v.toLocaleString();
+  document.getElementById('tIll').textContent=(s||v)?'≈ illustrative':'';
+  applyLabels();
+  // handoff
+  if(st.handoff) doHandoff(st.try, st.handoff);
+}
+function next(){setStep(curStep+1);} function prev(){setStep(curStep-1);}
+document.getElementById('next').onclick=()=>{stopPlay();next();};
+document.getElementById('prev').onclick=()=>{stopPlay();prev();};
+document.getElementById('play').onclick=()=>{playing?stopPlay():startPlay();};
+function startPlay(){playing=true;playT=0;document.getElementById('play').textContent='⏸ Pause';}
+function stopPlay(){playing=false;document.getElementById('play').textContent='▶ Play';}
+addEventListener('keydown',e=>{if(e.key==='ArrowRight'){stopPlay();next();}if(e.key==='ArrowLeft'){stopPlay();prev();}
+  if(e.key===' '){e.preventDefault();playing?stopPlay():startPlay();}});
+document.getElementById('modeToggle').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  mode=b.dataset.m;[...e.currentTarget.children].forEach(x=>x.classList.toggle('on',x===b));applyLabels();};
+
+/* visual handoff: a dot travels from the triggering button into the left entry node */
+const travel=document.getElementById('travel');
+function doHandoff(tryId, nodeId){
+  const fromEl = tryId?document.getElementById('b-'+tryId):document.querySelector('#composer .ibox');
+  const toEl = nodeEls[nodeId]?.querySelector('rect');
+  if(!fromEl||!toEl) return;
+  const f=fromEl.getBoundingClientRect(), t=toEl.getBoundingClientRect();
+  const x0=f.left+f.width/2, y0=f.top+f.height/2, x1=t.left+t.width/2, y1=t.top+t.height/2;
+  const t0=performance.now(), dur=700;
+  travel.style.opacity=1;
+  (function step(now){const p=Math.min(1,(now-t0)/dur);const e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+    travel.style.left=(x0+(x1-x0)*e)+'px';travel.style.top=(y0+(y1-y0)*e)+'px';
+    travel.style.opacity=String(1-p*0.2);
+    if(p<1)requestAnimationFrame(step);else{travel.style.opacity=0;pingNode(nodeId);}})(t0);
+}
+function pingNode(id){const c=center(id);pingEl.setAttribute('cx',c.x);pingEl.setAttribute('cy',c.y);
+  pingEl.style.transition='none';pingEl.setAttribute('r',8);pingEl.style.opacity='0.9';
+  requestAnimationFrame(()=>{pingEl.style.transition='r .6s ease-out, opacity .6s ease-out';pingEl.setAttribute('r',26);pingEl.style.opacity='0';});}
+
+/* particle + autoplay loop */
+let last=performance.now();
+function loop(now){
+  const dt=(now-last)/1000; last=now;
+  let idx=0; const phase=(now/1400)%1;
+  for(const f of activeFlows){ for(let i=0;i<PER&&idx<POOL;i++,idx++){
+    const u=(phase+i/PER)%1; const pt=f.path.getPointAtLength(u*f.len);
+    const c=flux[idx]; c.setAttribute('cx',pt.x); c.setAttribute('cy',pt.y); c.style.opacity=0.9; } }
+  for(let i=idx;i<POOL;i++) flux[i].style.opacity=0;
+  if(playing){playT+=dt; if(playT>3.4){playT=0; const steps=S[curKey].steps;
+    if(curStep>=steps.length-1){ const ni=(ORDER.indexOf(curKey)+1)%ORDER.length; select(ORDER[ni]); } else next(); }}
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+applyLabels(); select('prologue');
+window.__egReady=true;
+</script>
+</body>
+</html>

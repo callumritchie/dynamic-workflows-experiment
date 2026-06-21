@@ -1,0 +1,175 @@
+[
+{"i":1,"opps":[
+{"slug":"decide-what-to-watch","label":"Overcome decision fatigue choosing from unlimited content","importance":5,"satisfaction":1},
+{"slug":"unified-content-discovery","label":"See what's new/good across all services in one place","importance":5,"satisfaction":1},
+{"slug":"remember-where-left-off","label":"Sync watch progress across devices","importance":4,"satisfaction":1},
+{"slug":"smart-content-matching","label":"Recommendations matching current mood/effort","importance":4,"satisfaction":2},
+{"slug":"know-show-locations","label":"Know which service has which show","importance":3,"satisfaction":1},
+{"slug":"resume-shows-without-catching-up","label":"Resume a show without rewatching to recall context","importance":3,"satisfaction":1}
+]},
+{"i":2,"opps":[
+{"slug":"decision-paralysis-across-apps","label":"Decide what to watch across multiple apps","importance":5,"satisfaction":1},
+{"slug":"discovery-friction-single-view","label":"Discover new content unified in one place","importance":5,"satisfaction":1},
+{"slug":"content-location-recall","label":"Remember which service a title is on","importance":4,"satisfaction":2},
+{"slug":"multi-device-progress-tracking","label":"Track watch position across devices","importance":4,"satisfaction":2},
+{"slug":"forgotten-watched-detection","label":"Know whether a show was already watched","importance":3,"satisfaction":1},
+{"slug":"password-and-account-management","label":"Manage passwords/accounts across subscriptions","importance":3,"satisfaction":2},
+{"slug":"subscription-entitlement-uncertainty","label":"Know if a title is on a subscription you own","importance":3,"satisfaction":1},
+{"slug":"parental-control-safety","label":"Granular parental controls without supervision","importance":4,"satisfaction":1}
+]},
+{"i":3,"opps":[
+{"slug":"cross-platform-content-discovery","label":"Consolidated view of content across subscriptions","importance":5,"satisfaction":1},
+{"slug":"low-friction-content-selection","label":"Quick decision without fatigue","importance":5,"satisfaction":2},
+{"slug":"recommendation-capture","label":"Persistent list of friend recommendations","importance":4,"satisfaction":1},
+{"slug":"watchlist-sync","label":"Shared watchlist with family at other locations","importance":3,"satisfaction":1},
+{"slug":"subscription-visibility","label":"Transparency on active subscriptions and cost","importance":4,"satisfaction":1},
+{"slug":"content-resumption","label":"Recover partially-watched content","importance":4,"satisfaction":2},
+{"slug":"remote-viewing-facilitation","label":"Access/share content when visiting others","importance":3,"satisfaction":1}
+]},
+{"i":4,"opps":[
+{"slug":"unified-content-discovery","label":"Single place to search/discover across subscriptions","importance":5,"satisfaction":1},
+{"slug":"reduce-app-switching","label":"Reduce friction switching between apps","importance":5,"satisfaction":1},
+{"slug":"track-watch-progress","label":"Track where you are across shows/platforms","importance":4,"satisfaction":1},
+{"slug":"subscription-waste-awareness","label":"See which subscriptions are actually used","importance":4,"satisfaction":2},
+{"slug":"smart-content-recommendations","label":"Smarter recs to break decision paralysis","importance":3,"satisfaction":2},
+{"slug":"paired-viewing-coordination","label":"Find content to watch together as a couple","importance":4,"satisfaction":2}
+]},
+{"i":5,"opps":[
+{"slug":"cross-platform-search","label":"Unified search across services","importance":5,"satisfaction":1},
+{"slug":"sync-viewing-discovery","label":"Find overlapping content when watching with others","importance":5,"satisfaction":1},
+{"slug":"smart-recommendations","label":"Personalized recs over generic ones","importance":4,"satisfaction":2},
+{"slug":"release-calendar","label":"Know what's coming out on each service","importance":4,"satisfaction":1},
+{"slug":"reduce-decision-fatigue","label":"Less browsing burden","importance":4,"satisfaction":2},
+{"slug":"centralized-discovery","label":"One place to discover new content","importance":4,"satisfaction":1}
+]},
+{"i":6,"opps":[
+{"slug":"unified-content-discovery","label":"See all available content in one place","importance":5,"satisfaction":1},
+{"slug":"watched-history-tracking","label":"Never rewatch something already seen","importance":5,"satisfaction":1},
+{"slug":"subscription-cost-transparency","label":"Understand spend and value per service","importance":4,"satisfaction":2},
+{"slug":"subscription-management-simplicity","label":"Easily cancel/manage subscriptions","importance":3,"satisfaction":2},
+{"slug":"family-content-filtering","label":"Reliable parental controls for kids","importance":4,"satisfaction":2},
+{"slug":"personalized-recommendations","label":"Good recs to avoid decision fatigue","importance":4,"satisfaction":2}
+]},
+{"i":7,"opps":[
+{"slug":"unified-content-discovery","label":"Central place to find content across subscriptions","importance":4,"satisfaction":1},
+{"slug":"subscription-overload","label":"Unclear what services they pay for/use","importance":3,"satisfaction":2},
+{"slug":"content-location-friction","label":"Can't remember which service has content","importance":4,"satisfaction":2},
+{"slug":"synchronized-watching","label":"Watch with friends in other time zones","importance":4,"satisfaction":1},
+{"slug":"cross-device-sync","label":"Reliable resume position across devices","importance":3,"satisfaction":2},
+{"slug":"travel-accessibility","label":"See what's available when away from home","importance":2,"satisfaction":1}
+]},
+{"i":8,"opps":[
+{"slug":"unified-content-discovery","label":"Unified view of what's available across subscriptions","importance":5,"satisfaction":1},
+{"slug":"decision-fatigue","label":"Reduce friction/time choosing what to watch","importance":5,"satisfaction":2},
+{"slug":"resume-playback","label":"Find and resume partially-watched content","importance":4,"satisfaction":1},
+{"slug":"content-memory","label":"Recall what's happening mid-show","importance":3,"satisfaction":2},
+{"slug":"subscription-optimization","label":"Clarity on which subscriptions are used","importance":4,"satisfaction":2},
+{"slug":"low-commitment-viewing","label":"Quick low-attention viewing option","importance":3,"satisfaction":1}
+]},
+{"i":9,"opps":[
+{"slug":"unclear-subscription-ownership","label":"Uncertainty which subscriptions are owned vs shared","importance":3,"satisfaction":2},
+{"slug":"app-hopping-friction","label":"Friction switching between apps to find content","importance":4,"satisfaction":1},
+{"slug":"uncertain-content-location","label":"Don't know which service has a show","importance":4,"satisfaction":2},
+{"slug":"decision-paralysis","label":"Excessive browsing without finding content","importance":5,"satisfaction":2},
+{"slug":"subscription-guilt","label":"Paying for unused subscriptions + FOMO to cancel","importance":5,"satisfaction":1},
+{"slug":"cancellation-friction","label":"Hard to cancel unused subscriptions","importance":3,"satisfaction":2},
+{"slug":"inventory-invisibility","label":"Don't know what's on owned subscriptions","importance":4,"satisfaction":2},
+{"slug":"co-viewing-coordination","label":"Coordinate what to watch with partner across services","importance":3,"satisfaction":1},
+{"slug":"settlement-bias","label":"Settle for familiar content instead of searching","importance":2,"satisfaction":1}
+]},
+{"i":10,"opps":[
+{"slug":"unified-service-discovery","label":"Instantly know which service has a title","importance":5,"satisfaction":1},
+{"slug":"coordinated-watching","label":"Share title + location with remote friends/family","importance":5,"satisfaction":1},
+{"slug":"mood-based-discovery","label":"Find content matching current mood across services","importance":4,"satisfaction":2},
+{"slug":"reduce-decision-fatigue","label":"Avoid exhaustion browsing multiple services","importance":4,"satisfaction":1},
+{"slug":"cross-service-visibility","label":"Discover good content across all owned subscriptions","importance":4,"satisfaction":2},
+{"slug":"persistent-watch-list","label":"Save friend recs and find them again later","importance":4,"satisfaction":1}
+]},
+{"i":11,"opps":[
+{"slug":"decision-fatigue-overwhelm","label":"Analysis paralysis from too many options","importance":5,"satisfaction":1},
+{"slug":"trust-in-recommendations","label":"Trustworthy personalized recommendations","importance":5,"satisfaction":1},
+{"slug":"low-effort-decision-making","label":"Quick confident decisions without research","importance":5,"satisfaction":1},
+{"slug":"content-tone-clarity","label":"Clear tone/mood indicators on content","importance":4,"satisfaction":1},
+{"slug":"save-and-rediscover","label":"Save content discovered elsewhere for later","importance":4,"satisfaction":1},
+{"slug":"social-proof-integration","label":"Trusted friend recs over algorithmic","importance":4,"satisfaction":1},
+{"slug":"low-commitment-content","label":"Tagging for low-attention background content","importance":4,"satisfaction":2},
+{"slug":"subscription-management","label":"Confusion managing multiple subscriptions","importance":3,"satisfaction":2}
+]},
+{"i":12,"opps":[
+{"slug":"decision-paralysis-multiple-apps","label":"Overhead choosing across multiple apps","importance":5,"satisfaction":1},
+{"slug":"cross-device-progress-tracking","label":"Track watch progress phone to TV","importance":5,"satisfaction":1},
+{"slug":"unified-watch-status-view","label":"See position in all shows at a glance","importance":5,"satisfaction":1},
+{"slug":"subscription-cost-management","label":"Uncertainty what subscriptions cost/active","importance":3,"satisfaction":2},
+{"slug":"children-content-safety","label":"Monitor kids' viewing / inappropriate content","importance":4,"satisfaction":1},
+{"slug":"shared-parental-responsibility","label":"Coordinate content monitoring between spouses","importance":3,"satisfaction":2},
+{"slug":"discovery-beyond-algorithms","label":"Human-curated recs over algorithmic","importance":4,"satisfaction":2}
+]},
+{"i":13,"opps":[
+{"slug":"service-discovery-friction","label":"Find where shows are available across services","importance":5,"satisfaction":1},
+{"slug":"subscription-fatigue","label":"Visibility/management of active subscriptions","importance":5,"satisfaction":1},
+{"slug":"content-decision-paralysis","label":"Reduce browsing friction in limited windows","importance":4,"satisfaction":2},
+{"slug":"family-content-alignment","label":"Find content appealing to whole family","importance":4,"satisfaction":1},
+{"slug":"recommendation-trust","label":"Trustworthy recs that don't feel like manipulation","importance":3,"satisfaction":2}
+]},
+{"i":14,"opps":[
+{"slug":"unified-content-discovery","label":"Single interface to discover across services","importance":5,"satisfaction":1},
+{"slug":"personalized-recommendation-relief","label":"Better recs beyond algorithmic staples","importance":4,"satisfaction":2},
+{"slug":"friend-sync-social-watching","label":"Track what friends watch / coordinate watch-alongs","importance":4,"satisfaction":1},
+{"slug":"subscription-efficiency-clarity","label":"See which subscriptions justify their cost","importance":5,"satisfaction":2},
+{"slug":"social-discovery-integration","label":"Connect social mentions to your services","importance":3,"satisfaction":1},
+{"slug":"flexible-subscription-management","label":"Easy temporary subscribe/cancel without guilt","importance":4,"satisfaction":2}
+]},
+{"i":15,"opps":[
+{"slug":"cross-service-search-unified","label":"Unified search across services","importance":5,"satisfaction":1},
+{"slug":"shared-viewing-availability","label":"Coordinate content accessible to multiple people","importance":5,"satisfaction":1},
+{"slug":"decision-fatigue-scrolling","label":"Excessive browsing / decision paralysis","importance":4,"satisfaction":1},
+{"slug":"trusted-recommendations","label":"Recs from trusted people over algorithm","importance":4,"satisfaction":2},
+{"slug":"subscription-justification","label":"Keep services out of FOMO not usage","importance":3,"satisfaction":2},
+{"slug":"social-viewing-friction","label":"Discovery process ruins group viewing vibe","importance":4,"satisfaction":2}
+]},
+{"i":16,"opps":[
+{"slug":"scattered-content-discovery","label":"Manually search apps to find where a show is","importance":5,"satisfaction":1},
+{"slug":"forgotten-content-location","label":"Remember which service hosts a show","importance":4,"satisfaction":2},
+{"slug":"lost-progress-tracking","label":"Losing progress and restarting shows","importance":4,"satisfaction":2},
+{"slug":"decision-fatigue-paradox","label":"Choice overload makes deciding harder","importance":5,"satisfaction":1},
+{"slug":"new-show-risk-aversion","label":"Reluctant to start new shows (rewatch instead)","importance":5,"satisfaction":1},
+{"slug":"tired-evening-friction","label":"Evening fatigue reduces effort to find content","importance":4,"satisfaction":1},
+{"slug":"recommendations-not-actionable","label":"Friend recs never converted to viewing","importance":3,"satisfaction":2},
+{"slug":"watchlist-cruft","label":"Watch-later lists cluttered and unreliable","importance":3,"satisfaction":1},
+{"slug":"fragmented-progress-visibility","label":"No unified view of in-progress shows","importance":5,"satisfaction":1}
+]},
+{"i":17,"opps":[
+{"slug":"unified-watchlist-across-services","label":"Single watchlist across all services","importance":5,"satisfaction":1},
+{"slug":"combat-recommendation-fatigue","label":"Stop showing finished/known shows in recs","importance":4,"satisfaction":1},
+{"slug":"quick-resume-discovery","label":"Fast way to find something when time-constrained","importance":5,"satisfaction":1},
+{"slug":"new-release-notifications","label":"Stay informed of new releases across subs","importance":4,"satisfaction":1},
+{"slug":"cross-device-sync","label":"Seamless playback position across devices","importance":4,"satisfaction":2},
+{"slug":"family-profile-security","label":"Parental controls preventing access to adult content","importance":5,"satisfaction":2},
+{"slug":"visibility-across-subscriptions","label":"Know what's available on each service","importance":3,"satisfaction":1}
+]},
+{"i":18,"opps":[
+{"slug":"unified-content-discovery","label":"See everything in one place not five apps","importance":5,"satisfaction":1},
+{"slug":"decision-paralysis-friction","label":"Choice paralysis selecting what to watch","importance":5,"satisfaction":1},
+{"slug":"subscription-fatigue","label":"Visibility into active subscriptions/spend","importance":4,"satisfaction":1},
+{"slug":"time-constraint-friction","label":"Discovery consumes limited viewing time","importance":5,"satisfaction":1},
+{"slug":"content-search-friction","label":"Hard to find a specific rec across platforms","importance":4,"satisfaction":1},
+{"slug":"low-risk-viewing-preference","label":"Prefer safe rewatchable content","importance":4,"satisfaction":2},
+{"slug":"subscription-switching-costs","label":"Friction canceling unwanted subscriptions","importance":3,"satisfaction":1}
+]},
+{"i":19,"opps":[
+{"slug":"cross-service-content-discovery","label":"Discover what's new across all subscriptions","importance":5,"satisfaction":1},
+{"slug":"unified-new-releases-view","label":"Single view of what's actually new","importance":4,"satisfaction":1},
+{"slug":"subscription-inventory-clarity","label":"Track which services owned + what's on each","importance":4,"satisfaction":2},
+{"slug":"social-discovery-integration","label":"See what friends are watching","importance":4,"satisfaction":1},
+{"slug":"decision-friction-reduction","label":"Browsing takes too long / feels like work","importance":5,"satisfaction":2},
+{"slug":"subscription-cost-optimization","label":"Unsure which subscriptions to keep/cancel","importance":3,"satisfaction":2}
+]},
+{"i":20,"opps":[
+{"slug":"unified-viewing-status","label":"See all shows in one place with watch status","importance":5,"satisfaction":1},
+{"slug":"cross-service-discovery","label":"Find shows without searching across platforms","importance":5,"satisfaction":1},
+{"slug":"shared-watch-coordination","label":"Sync progress with remote friends/family","importance":5,"satisfaction":2},
+{"slug":"focus-during-viewing","label":"Minimize scrolling friction starting shows","importance":4,"satisfaction":1},
+{"slug":"persistent-progress-tracking","label":"Accurate watch history across devices/time","importance":4,"satisfaction":2},
+{"slug":"watch-list-management","label":"Accessible shared watchlist","importance":3,"satisfaction":1}
+]}
+]

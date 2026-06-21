@@ -1,0 +1,66 @@
+[
+{"i":21,"persona":"Busy streamer with decision fatigue","opps":[
+{"slug":"choice-paralysis-overload","label":"Too many options across subscriptions creates choice paralysis","importance":5,"satisfaction":1},
+{"slug":"decision-friction-for-quick-viewing","label":"Hard to find content that fits the time available","importance":4,"satisfaction":1},
+{"slug":"unfinished-content-mental-burden","label":"Abandoned shows clutter the experience","importance":3,"satisfaction":2},
+{"slug":"safe-choice-default","label":"Low confidence in discovery leads to rewatching the familiar","importance":4,"satisfaction":2},
+{"slug":"low-completion-rates","label":"Frequent abandonment of new shows after the first episode","importance":4,"satisfaction":1},
+{"slug":"subscription-misalignment","label":"Keeping low-usage subscriptions with poor ROI","importance":3,"satisfaction":2},
+{"slug":"social-watch-coordination","label":"Hard to coordinate group watching across services","importance":3,"satisfaction":2},
+{"slug":"instant-hook-requirement","label":"Content must grab attention immediately or gets dropped","importance":4,"satisfaction":1}
+]},
+{"i":22,"persona":"Casual multi-platform streamer","opps":[
+{"slug":"cross-service-discovery","label":"Hard to find which service has a specific show","importance":5,"satisfaction":1},
+{"slug":"content-recommendation-fatigue","label":"Decision paralysis when browsing options","importance":4,"satisfaction":2},
+{"slug":"rewatch-friction-avoidance","label":"Settling for rewatches due to search friction","importance":4,"satisfaction":2},
+{"slug":"unified-watch-status","label":"Track where you left off across devices and services","importance":4,"satisfaction":1},
+{"slug":"time-cost-of-search","label":"Finding content takes too long vs available leisure time","importance":5,"satisfaction":1},
+{"slug":"multishow-tracking","label":"Remember which shows you're currently following","importance":3,"satisfaction":2}
+]},
+{"i":23,"persona":"Busy parent streamer","opps":[
+{"slug":"low-friction-discovery","label":"Discover what's worth watching without searching every service","importance":5,"satisfaction":1},
+{"slug":"word-of-mouth-capture","label":"Lose track of recommendations mentioned in passing","importance":4,"satisfaction":1},
+{"slug":"cross-service-aggregation","label":"Tired of juggling apps to see what's new across subscriptions","importance":5,"satisfaction":2},
+{"slug":"smart-notifications","label":"Timely alerts about new content that matches real tastes","importance":4,"satisfaction":1},
+{"slug":"time-aware-content","label":"Content that fits limited leisure time without demanding full attention","importance":4,"satisfaction":2},
+{"slug":"parental-controls-evasion","label":"Child bypasses parental controls to reach inappropriate content","importance":4,"satisfaction":2},
+{"slug":"subscription-rationalization","label":"Keeping subscriptions out of FOMO despite low perceived value","importance":3,"satisfaction":2}
+]},
+{"i":24,"persona":"Busy parent with multiple subscriptions","opps":[
+{"slug":"discovery-across-services","label":"Discover content across all subscriptions in one place","importance":5,"satisfaction":1},
+{"slug":"subscription-awareness","label":"Lost track of which subscriptions are active and their charges","importance":5,"satisfaction":2},
+{"slug":"subscription-management","label":"One place to view all subscriptions, status and billing","importance":5,"satisfaction":1},
+{"slug":"account-recovery","label":"Cancelling is confusing across platform-specific workflows","importance":4,"satisfaction":2},
+{"slug":"content-sharing-across-devices","label":"Resume watching across phone and TV without losing place","importance":4,"satisfaction":1},
+{"slug":"recommendation-discoverability","label":"Relying on word-of-mouth over in-app recommendations","importance":4,"satisfaction":2},
+{"slug":"subscription-fatigue","label":"Exhaustion from managing subscriptions and repetitive scrolling","importance":4,"satisfaction":1}
+]},
+{"i":25,"persona":"Casual multi-service subscriber","opps":[
+{"slug":"cross-service-content-discovery","label":"Search content across all services at once","importance":5,"satisfaction":1},
+{"slug":"subscription-awareness","label":"Know what's on each service without opening every app","importance":4,"satisfaction":2},
+{"slug":"watch-party-coordination","label":"Coordinate watch parties when friends have different services","importance":5,"satisfaction":2},
+{"slug":"friend-subscription-mapping","label":"Know which services friends have without asking","importance":4,"satisfaction":1},
+{"slug":"subscription-management","label":"Visibility to avoid forgotten paid services","importance":3,"satisfaction":2},
+{"slug":"shared-watched-list","label":"Group watchlists aggregating what friends want to watch","importance":4,"satisfaction":1},
+{"slug":"service-consolidation-awareness","label":"Understand what's available on bundled services","importance":3,"satisfaction":2}
+]},
+{"i":26,"persona":"Tired evening streamer","opps":[
+{"slug":"decision-paralysis-from-choice-overload","label":"Too much time deciding, leading to default rewatches","importance":5,"satisfaction":1},
+{"slug":"fatigue-driven-content-avoidance","label":"Too tired after work for demanding content or decisions","importance":4,"satisfaction":2},
+{"slug":"unknown-content-location","label":"Not knowing which service has specific content","importance":5,"satisfaction":1},
+{"slug":"lack-of-watchlist-persistence","label":"No system to track things you want to watch","importance":4,"satisfaction":1},
+{"slug":"mood-content-mismatch","label":"Hard to match content to current mood","importance":4,"satisfaction":2},
+{"slug":"incomplete-show-finishing","label":"Low completion rate due to pacing or unmet hype","importance":3,"satisfaction":2},
+{"slug":"subscription-value-uncertainty","label":"Paying for subscriptions but unable to use them effectively","importance":4,"satisfaction":2},
+{"slug":"fragmented-streaming-interface","label":"Multiple apps create friction vs unified discovery","importance":5,"satisfaction":1}
+]},
+{"i":28,"persona":"Busy parent streaming consumer","opps":[
+{"slug":"unified-content-discovery","label":"Discover content across subscriptions in one place","importance":5,"satisfaction":1},
+{"slug":"reduce-decision-friction","label":"Reduce decision fatigue when choosing with limited time","importance":4,"satisfaction":2},
+{"slug":"parental-control-management","label":"Consistent parental controls across services without complex setup","importance":5,"satisfaction":1},
+{"slug":"preference-persistence","label":"Remember what the user wants so recommendations aren't forgotten","importance":4,"satisfaction":1},
+{"slug":"content-location-tracking","label":"Know which service has content without trial-and-error","importance":4,"satisfaction":1},
+{"slug":"subscription-awareness","label":"Visibility into active subscriptions and what's on each","importance":3,"satisfaction":2},
+{"slug":"faster-content-lookup","label":"Immediate answer on whether content is available","importance":3,"satisfaction":1}
+]}
+]

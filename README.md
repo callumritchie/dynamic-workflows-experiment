@@ -21,8 +21,37 @@ The interviews are written by **Haiku** (cheap, bounded, repetitive work) via a 
 ## How to run the analysis
 You generate the workflow yourself: open the repo in Claude Code and paste `prompts/run-discovery-workflow.md`. Claude writes the harness, runs it blind against `interviews/`, prints the ranked opportunities, and writes prototypes to `outputs/`. See `CLAUDE.md` for the full flow. `example-workflows/` holds reference harnesses (what Claude tends to generate) — read them, don't invoke them.
 
+## From experiment to product: `evidence-graph/`
+The experiment above is a one-shot script. `evidence-graph/` is the next step: the same
+dynamic-workflow pattern turned into a **runnable reference of a collaborative analysis
+platform** — a content-addressed pipeline that's incrementally maintained and cheaply
+queried. It adds, in order, an extraction cache + incremental canonicalization, a question
+**router** (answer from cache / scoped semantic retrieval with citations / on-the-fly
+mini-workflow), a collaboration layer (personal-private with one-click promote-to-project),
+multi-source fusion (quant + docs), and output tiers (deck / prototypes).
+
+It runs **for real**: a local backend (`evidence-graph/server.mjs`) drives a split-screen
+UI where you watch the machinery as you work.
+
+```
+cd evidence-graph
+npm install            # for the local embedding model (real semantic search, no API key)
+node server.mjs        # http://127.0.0.1:8100/  — live workspace + backend visualisation
+npm test               # five regression suites
+```
+
+- **Retrieval is real** (local `all-MiniLM` embeddings) and **extraction** replays the real
+  Haiku runs (live extraction activates with a valid `ANTHROPIC_API_KEY`).
+- Ask in plain language, scope to a few interviews, **promote** answers, **triangulate**
+  across sources, or ask for **personas** — which composes and runs a brand-new dynamic
+  workflow on the fly over the cached interviews.
+- `evidence-graph/viz/explorer.html` is a guided (scripted) tour of the same concepts;
+  `evidence-graph/README.md` and `design/product-spec.md` document the architecture.
+
 ## Layout
 - `CLAUDE.md` — context + how to run, for Claude Code.
+- `evidence-graph/` — the productized build (pipeline, router, collaboration, fusion, output tiers) + the live UI.
+- `design/` — product spec: data schemas, cache design, the question-router contract.
 - `interviews/` — 100 synthetic transcripts (1-2 pages each). The blind input.
 - `ground-truth/` — product, strategy, and the hidden answer key. Never given to the analysis.
 - `prompts/` — `generate-interview.md` (generation) and `run-discovery-workflow.md` (paste this to run the analysis).

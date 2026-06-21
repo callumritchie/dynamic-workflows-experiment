@@ -1,0 +1,11 @@
+metric,label,segment,value,unit,n
+decision_time,Time spent on the decision of what to watch before giving up,all,18,minutes,412
+give_up_rate,Share who give up and watch something familiar instead of choosing new,all,47,percent,412
+subscriptions,Average subscriptions paid for per household,all,4.2,count,412
+find_show_fail,Share unclear which subscription a show is on,all,38,percent,412
+lose_place,Share who lose watch progress across devices when switching,all,29,percent,412
+monthly_spend,Monthly amount paid for subscriptions kept but unused,all,86,usd,412
+decision_time,Time spent on the decision of what to watch before giving up,busy-parent,23,minutes,120
+give_up_rate,Share who give up and watch something familiar instead of choosing new,busy-parent,55,percent,120
+monthly_spend,Monthly amount paid for subscriptions kept but unused,budget-conscious,71,usd,98
+find_show_fail,Share unclear which subscription a show is on,budget-conscious,44,percent,98

@@ -6,3 +6,6 @@ node_modules/
 # Generated results - this repo is "generate your own"; nothing in outputs/ is committed.
 outputs/*
 !outputs/.gitkeep
+
+# evidence-graph local artifact cache (Postgres/object-store stand-in)
+evidence-graph/.eg/
