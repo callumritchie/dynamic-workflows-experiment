@@ -1,5 +1,7 @@
 # dynamic-workflows-experiment
 
+<img width="1372" height="679" alt="Screenshot 2026-06-23 at 12 23 21" src="https://github.com/user-attachments/assets/5fb41c23-9581-4a3a-b275-350f38531c6d" />
+
 The experiment behind the Product Compass article *Dynamic Workflows: The Orchestrator Moved Off the Model*.
 
 It demonstrates one thing: **a dynamic workflow earns its keep when the output of one stage decides the next**, not on a single fan-out (a subagent already does that). The pipeline runs a product-discovery loop end to end:
